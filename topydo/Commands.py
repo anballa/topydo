@@ -123,6 +123,10 @@ def get_subcommand(p_args):
                 if subcommand in SUBCOMMAND_MAP:
                     args = [subcommand, 'help']
                     return get_subcommand(args)
+                elif subcommand in alias_map:
+                    result, _ = resolve_alias(subcommand, [])
+                    if result:
+                        return (result, ['help'])
             except IndexError:
                 # will result in empty result
                 pass

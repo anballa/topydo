@@ -18,8 +18,11 @@ import unittest
 
 from topydo.Commands import get_subcommand
 from topydo.commands.AddCommand import AddCommand
+from topydo.commands.AppendCommand import AppendCommand
 from topydo.commands.DeleteCommand import DeleteCommand
+from topydo.commands.ListContextCommand import ListContextCommand
 from topydo.commands.ListCommand import ListCommand
+from topydo.commands.ListProjectCommand import ListProjectCommand
 from topydo.commands.TagCommand import TagCommand
 from topydo.lib.Config import ConfigError, config
 
@@ -37,6 +40,22 @@ class GetSubcommandTest(TopydoTest):
         real_cmd, final_args = get_subcommand(args)
         self.assertTrue(issubclass(real_cmd, AddCommand))
         self.assertEqual(final_args, ["help"])
+
+    def test_help_aliases(self):
+        commands = (
+            ("listprojects", ListProjectCommand),
+            ("lsprj", ListProjectCommand),
+            ("listcon", ListContextCommand),
+            ("lscon", ListContextCommand),
+            ("append", AppendCommand),
+            ("app", AppendCommand),
+        )
+
+        for name, expected_command in commands:
+            with self.subTest(name=name):
+                real_cmd, final_args = get_subcommand(["help", name])
+                self.assertTrue(issubclass(real_cmd, expected_command))
+                self.assertEqual(final_args, ["help"])
 
     def test_alias01(self):
         config("test/data/aliases.conf")
